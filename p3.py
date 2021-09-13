@@ -18,4 +18,5 @@ def lakeshore(V, data):
 
 
 print(lakeshore(0.135480, dat))
-#make it into an array &error term
+# make it into an array &error term
+# use
