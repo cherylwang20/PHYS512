@@ -3,7 +3,7 @@ from scipy import interpolate
 
 dat = np.loadtxt('lakeshore.txt')
 
-
+# polynomial interpolation
 def lakeshore(V, data):
     T_in = data[:, 0] # for later comparsion
     V_in = data[:, 1]
@@ -37,7 +37,7 @@ def lakeshore(V, data):
     return T_out
 
 
-
+# cubic spline interpolation
 def lakeshore_c(V, data):
     V_in = data[:, 1]
     T_in = data[:, 0] # for later comparsion
@@ -45,6 +45,7 @@ def lakeshore_c(V, data):
     spln = interpolate.splrep(V_in[::-1], T_in[::-1])
     TT_c = interpolate.splev(V, spln)    
     return TT_c
+
 
 def ndiff(fun,x):
     dx = np.zeros(len(x))
@@ -57,6 +58,12 @@ def ndiff(fun,x):
         deriv[i] = (fun(x[i] + dx[i],dat) - fun(x[i] - dx[i],dat))/(2*dx[i])
     return deriv
 
+#bootstrap resampling
+V_new = np.linspace(min(dat[:,1]),max(dat[:,1]),1000)
+T_new = lakeshore_c(V_new,dat)
+
+sample = np.random.choice(T_new,size=400, replace=True)
+print(sample)
    
 V_i = [0.6,0.8]
 print(lakeshore_c(V_i, dat))
