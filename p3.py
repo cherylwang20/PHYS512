@@ -1,7 +1,10 @@
 import numpy as np
 from scipy import interpolate
 
+
 dat = np.loadtxt('lakeshore.txt')
+T = dat[:,0]
+V = dat[:,1]
 
 # polynomial interpolation
 def lakeshore(V, data):
@@ -53,17 +56,25 @@ def ndiff(fun,x):
     error = np.zeros((len(x)))
     error2 = np.zeros(len(x))
     for i in range(len(x)):
-        eps = 7 * 10 ** (-17)  # what should be the optimized eps???
-        dx[i] = (eps) ** (1 / 3) * x[i]
+        eps = 7 * 10 ** (-17)
+        dx[i] = (eps) ** (1 / 4) * x[i]
         deriv[i] = (fun(x[i] + dx[i],dat) - fun(x[i] - dx[i],dat))/(2*dx[i])
     return deriv
 
+dvdt = ndiff(lakeshore_c,[1.5,1.4,0.6])
+print(dvdt)
+print(np.std(dvdt - dat[:,2]))
+
 #bootstrap resampling
-V_new = np.linspace(min(dat[:,1]),max(dat[:,1]),1000)
+V_new = np.linspace(min(V),max(V),200)
 T_new = lakeshore_c(V_new,dat)
 
-sample = np.random.choice(T_new,size=400, replace=True)
-print(sample)
+sample = np.sort(np.random.choice(T_new , size=len(V), replace=True))
+
+
+mse = np.square(T - sample).mean()
+
+print( mse )
    
 V_i = [0.6,0.8]
 print(lakeshore_c(V_i, dat))
