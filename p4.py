@@ -3,9 +3,14 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 
 # polynomial interpolation
+# we take in a function with a initial range of data points
+# we also take in the final points/interval that we want would like to interpolate
 def poly(fun,x1,dx,xx):
+    # create an empty array for final interpolation
     yy_p = np.empty(len(xx))
+    # evaluate the values of the function at x1s
     y1 = fun(x1)
+    # repeat the process for the desire array xx and append it to yy_p
     for i in range(len(xx)):
         ind = (xx[i] - x1[0])/dx
         ind = int(np.floor(ind))
@@ -13,41 +18,54 @@ def poly(fun,x1,dx,xx):
         y_use = y1[ind-1:ind+3]
         p = np.polyfit(x_use,y_use,3)
         yy_p[i] = np.polyval(p,xx[i])
-        err = np.std(yy_p - fun(xx))
+        err = np.std(yy_p - fun(xx)) #compare the interpolated data with the actual function
     return yy_p,err
 
 # cubic spline fit
+# we intake the function, the initial data points/range
+# also take in the final desired interpolated data
 def cubint(fun,x1,xx):
     y1 = fun(x1)
     spln = interpolate.splrep(x1,y1)
     yy_c = interpolate.splev(xx,spln)
-    err = np.std(yy_c - fun(xx))
+    err = np.std(yy_c - fun(xx)) #evalute the interpolated value with the actual function
     return yy_c,err
 
 # rational function fit
 def ratfit(y,x,n,m, full = False):
+    # intake the length of x and assert out matrix size is correct
     npt=len(x)
     assert(len(y)==npt)
     assert(n>=0)
     assert(m>=0)
     assert(n+ 1+m==npt)
 
+    # create an empty matrix
     top_mat=np.empty([npt,n+1])
     bot_mat=np.empty([npt,m])
+    # append the matrix with the desired value
     for i in range(n+1):
         top_mat[:,i]=x**i
     for i in range(m):
         bot_mat[:,i]=y*x**(i+1)
+    # merge the top and bottom row
     mat=np.hstack([top_mat,-bot_mat])
+
+    # create a choice for user to use either pinv and inv
     if full == True:
         pars =np.linalg.pinv(mat)@y
     else:
         pars=np.linalg.inv(mat)@y
+
+    # generate the coefficient and p and q
     p=pars[:n+1]
     q=pars[n+1:]
     return mat,p,q
 
 def rateval(x,p,q):
+    # using the cofficients generated form ratfit, compute the top and bottom
+    # polynomial functions for rational function fit
+    print(p,q)
     top=0
     for i,par in enumerate(p):
         top=top+par*x**i
@@ -56,25 +74,32 @@ def rateval(x,p,q):
         bot=bot+par*x**(i+1)
     return top/bot
 
+# intake the function, the initial xr values and the final desired value
+# for interpolation
 def ratint(fun,xr,xx,full = False):
+    # create data points of the function
     yr = fun(xr)
+    # define our m and n of the matrix
     m = len(yr) //2
     n = len(yr) - m - 1
+    # the user may use eithr pinv or inv fit
     if full == True:
-        mat, p, q = ratfit(yr, xr, n, m, True)
+        mat, p, q = ratfit(yr, xr, n, m, True) # using pinv fit
     else:
-        mat, p, q = ratfit(yr, xr, n, m)
+        mat, p, q = ratfit(yr, xr, n, m) # using inv fit
     yy_r = rateval(xx, p, q)
-    err = np.std(yy_r - fun(xx))
+    err = np.std(yy_r - fun(xx)) # evaluate the interpolated data with actual function
     return yy_r,err
 
+# define the lorentz function
 def lor(x):
     return 1/(1+x**2)
 
 if __name__ == '__main__':
-    x1 = np.linspace(-np.pi, np.pi, 1001)
-    dx = x1[1] - x1[0]
-    xx = np.linspace(-np.pi / 2, np.pi / 2, 1001)
+    # the first function to evaluate in cosine,
+    x1 = np.linspace(-np.pi, np.pi, 1001) # choose the initial data set to interpolate
+    dx = x1[1] - x1[0] # define the desired interval
+    xx = np.linspace(-np.pi / 2, np.pi / 2, 1001) # choose the final desired data out of interpolation
 
     polycos = poly(np.cos, x1, dx, xx)
     print('error through polynomial interpolation of,', np.cos, ' is', f" {polycos[1]: .3e}")
@@ -87,12 +112,9 @@ if __name__ == '__main__':
     ratcos = ratint(np.cos,xr,xx)
     print('error through Rational Function interpolation of  ,',np.cos,' is', f" {ratcos[1]: .3e}" )
 
-    plt.plot(xx,ratcos[0])
-    #plt.plot(xx,yy_p,'red')
-    #plt.plot(xx,yy_c,'-.')
-    #plt.show()
 
-    # for the Lorentz function
+
+    # for the Lorentz function, same as the cosine function
     xl = np.linspace(-5,5,1001)
     dxl = xl[1] - xl[0]
     xxl = np.linspace(-1,1,1001)
