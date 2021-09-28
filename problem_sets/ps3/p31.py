@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -33,3 +34,6 @@ print(err_h)
 def rk4_stepd(fun,x,y,h):
 
     return
+=======
+import numpy as np
+>>>>>>> origin/main
