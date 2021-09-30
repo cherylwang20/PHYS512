@@ -53,7 +53,7 @@ r2 = th230/u234
 
 hfont = {'fontname':'Times'}
 #
-fig , (ax1, ax2) = plt.subplots(1,2 ,figsize = (12,5))
+fig , (ax1, ax2) = plt.subplots(1,2 ,figsize = (9,3))
 ax1.plot(t[160:-1], r1[160:-1],'r','--')
 ax1.set_xlabel('Time (microseconds)',**hfont)
 ax1.set_ylabel('Pb206/U238',**hfont)
