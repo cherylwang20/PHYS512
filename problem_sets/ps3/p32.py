@@ -1,5 +1,6 @@
 import time
 
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import integrate
 
@@ -23,16 +24,37 @@ def fun(x,y,half_life = hl ):
     dydx[-1] = y[-2]/half_life[-2]
     return dydx
 
-
-print(len(hl))
 t0 = 0
-t1 = 1.7*10**21
+t1 = 5.*10**21
 y0 = [0]*(len(hl)+1)
 y0[0] = 1
 
+t_ev = np.linspace(t0,np.log(t1),400)
+t_e = np.zeros(len(t_ev))
+for i in range(len(t_ev)):
+    t_e[i] = np.e**t_ev[i]
+t_e[0] = 0
+
 t_s = time.time()
 # ans_rk4 = integrate.solve_ivp(fun,[t0,t1],y0,t_eval=t_ev, method = 'RK45')
-ans_radau = integrate.solve_ivp(fun,[t0,t1],y0 , method = 'DOP853')
+ans_radau = integrate.solve_ivp(fun,[t0,t1],y0 ,t_eval=t_e,method = 'Radau')
 t_e = time.time()
-print(ans_radau.y[0,-1],ans_radau.nfev)
-print(t_e - t_s)
+
+print(ans_radau.t)
+# print(ans_radau.y[0,-1],ans_radau.y[0],ans_radau.y[14],ans_radau.t)
+# print(t_e - t_s)
+u238 , pb206 = ans_radau.y[0],ans_radau.y[14]
+th230, u234= ans_radau.y[4], ans_radau.y[3]
+t = ans_radau.t
+#
+r1 = pb206/u238
+r2 = th230/u234
+# print(len(t))
+print(r1)
+#
+plt.plot(t[160:-1], r1[160:-1])
+plt.show()
+
+plt.plot(t[120:-40], r2[120:-40])
+# #plt.yscale('log')
+plt.show()
