@@ -50,11 +50,18 @@ t = ans_radau.t
 r1 = pb206/u238
 r2 = th230/u234
 # print(len(t))
-print(r1)
-#
-plt.plot(t[160:-1], r1[160:-1])
-plt.show()
 
-plt.plot(t[120:-40], r2[120:-40])
-# #plt.yscale('log')
+hfont = {'fontname':'Times'}
+#
+fig , (ax1, ax2) = plt.subplots(1,2 ,figsize = (12,5))
+ax1.plot(t[160:-1], r1[160:-1],'r','--')
+ax1.set_xlabel('Time (microseconds)',**hfont)
+ax1.set_ylabel('Pb206/U238',**hfont)
+
+
+ax2.plot(t[120:-40], r2[120:-40])
+ax2.set_xlabel('Time (microseconds)',**hfont)
+ax2.set_ylabel('Th230/U234',**hfont)
+
+plt.savefig("Radioactive_Ratio.png", dpi = 300, bbox_inches = "tight")
 plt.show()
