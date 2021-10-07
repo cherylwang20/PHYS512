@@ -6,7 +6,7 @@ def mylog2(x):
     ma_e, exp_e = np.frexp(np.e)
 
     # evaluate the ma of e and x using our previous log2 function
-    ma = np.polynomial.chebyshev.chebval(ma_x,n)
+    ma = np.polynomial.chebyshev.chebval(ma_xj,n)
     me = np.polynomial.chebyshev.chebval(ma_e,n)
 
     #using a change of basis
