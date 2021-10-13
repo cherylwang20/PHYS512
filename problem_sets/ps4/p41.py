@@ -74,6 +74,7 @@ def fit_newton(pars,fun,derivs,y,niter=15):
             par_errs = np.sqrt(np.diag(np.linalg.inv(lhs)))
             break
         chisq = chisq2
+        par_errs = np.sqrt(np.diag(np.linalg.inv(lhs)))
         print(pars)
     return pars, par_errs
 
