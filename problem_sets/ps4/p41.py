@@ -14,7 +14,7 @@ errs = 0.5*(lowsig + highsig);
 print(len(multi))
 
 # pre define a set of parameters
-pars=np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0])
+pars=np.asarray([69,0.022,0.12,0.06,2.10e-9,0.95])
 
 
 def get_spectrum(pars,lmax=3000):
@@ -34,33 +34,57 @@ def get_spectrum(pars,lmax=3000):
     cmb=powers['total']
     tt=cmb[:,0]
     tt = tt[2:]
-    return tt[:len(multi)]
+    return tt[:len(var)]
 
 def ff(x,n):
     pars[n] = x
     v = get_spectrum(pars)
     return v
 
-# numerial derivaives
-def ndiff(fun,x,n):
-    dx = d(fun,x,n)
-    print(dx)
-    deriv = (fun(x + dx,n) - fun(x - dx,n))/(2*dx)
-    return deriv
+#numerial differentiator from Q1
+def deriv(f, x,n):
+    dx = 0.01*x
+    x1 = x + 2 * dx
+    x2 = x + dx
+    x3 = x - dx
+    x4 = x - 2 * dx
+    return (f(x4,n) - 8 * f(x3,n) + 8 * f(x2,n) - f(x1,n)) / (12 * dx)
 
-def d(f, x,n):
-    eps = 7 * 10 ** (-18)
-    # choose the optimal h with trials
-    h = eps ** (1 / 2)
-    # derive the function for the third derivative use to estimated dx
-    func = (f(x+2*h,n) - 3*f(x+h,n) + 3*f(x,n) - f(x- h,n))/ h ** 3
-    # evaluate the optimal delta value for each input x and function f
-    delt = (3 * eps * abs(f(x,n)) / abs(func)) ** (1 / 3)
-    return np.std(delt)
 
 derivs = np.zeros([len(multi), len(pars)])
 
+#create the curvature matrix
 for n in range(len(pars)):
-    derivs[:,n] = ndiff(ff,pars[n],n)
+    derivs[:,n] = deriv(ff, pars[n],n)
 
-print(derivs)
+
+#y is the variance
+def fit_newton(pars,fun,derivs,y,niter=15):
+    chisq = 3272
+    for i in range(niter):
+        model = fun(pars)
+        r=y-model
+        lhs=derivs.T@derivs
+        rhs=derivs.T@r
+        dm=np.linalg.inv(lhs)@rhs
+        pars=pars+dm
+        chisq2 = np.sum((r / errs) ** 2)
+        print('on iteration ', i, ' chisq is ', chisq2, ' with step ', dm)
+        if abs(chisq2-chisq) < 0.001:
+            par_errs = np.sqrt(np.diag(np.linalg.inv(lhs)))
+            break
+        chisq = chisq2
+        print(pars)
+    return pars, par_errs
+
+fit=fit_newton(pars,get_spectrum,derivs,var)
+
+data = [fit[0],fit[1]]
+
+Array = np.array(data)
+
+file = open("planck_fit_params.txt", "w+")
+
+content = str(Array)
+file.write(content)
+file.close()
