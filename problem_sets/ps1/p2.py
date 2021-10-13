@@ -47,5 +47,7 @@ if __name__ == '__main__':
     fun = np.exp
     x = [0.3,1.4,3.2]
 
+    x = 0.3
+
     print('The numerical derivatives of',fun,' at', x, 'is/are', ndiff(fun,x,True)[0],' with intervals', ndiff(fun,x,True)[1],'and uncertainty', ndiff(fun,x,True)[2] )
     print('The numerical derivatives of the lorenz function at', x, 'is/are', ndiff(f2,x,True)[0])
