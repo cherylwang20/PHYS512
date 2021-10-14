@@ -6,16 +6,17 @@ from scipy import interpolate
 
 dat = np.loadtxt('COM_PowerSpect_CMB-TT-full_R3.01.txt',skiprows=1)
 curv = np.loadtxt('curvature_matrix.txt')
+der = np.loadtxt('deriv_matrix.txt')
 
 multi = dat[:,0]; var = dat[:,1];
 lowsig = dat[:,2]; highsig = dat[:,3];
 errs = 0.5*(lowsig + highsig);
 
-print(len(multi))
 
-# pre define a set of parameters
-pars=np.asarray([69,0.022,0.12,0.06,2.10e-9,0.95])
 
+def get_chisq(data,model):
+    chisq = np.sum((data-model)**2/errs**2)
+    return chisq
 
 def get_spectrum(pars,lmax=3000):
     #print('pars are ',pars)
@@ -51,12 +52,49 @@ def ff(x,n):
     v = get_spectrum(pars)
     return v
 
-der = np.zeros([len(multi), len(pars)])
+# pre define a set of parameters
+pars = [] # later append
+#pars.append(np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0]))
+pars.append(np.asarray([65,0.022, 0.12, 0.06, 2.10e-9,0.95 ]))
+chisq = [] # later append
+#model = get_spectrum([60,0.02,0.1,0.05,2.00e-9,1.0])
+model = get_spectrum([65,0.02, 0.1, 0.05, 2.00e-9,1 ])
+chisq.append(get_chisq(var, model))
+print(get_chisq(var, model))
 
-#create the dervative matrix
-for n in range(len(pars)):
-    der[:,n] = deriv(ff, pars[n],n)
 
-def step_size():
+nstep = 10;
+step_size = np.linalg.inv(curv)@der.T@((var - model)/3)
+print(step_size)
+step_taken = 0
 
-    return
+def get_step(step_size):
+    step = np.random.randn(len(step_size))*step_size
+    return step
+
+while nstep > step_taken:
+    pars_new = pars[-1] + get_step(step_size)
+    print(pars[-1],chisq[-1])
+    model_new = get_spectrum(pars_new)
+    new_chisq = get_chisq(var,model_new)
+
+    d_chisq = new_chisq - chisq[-1]
+    prob_step = np.exp(-0.5*d_chisq)
+    print(prob_step)
+    accept = np.random.rand(1) < prob_step
+
+    if accept:
+        pars.append(pars_new)
+        chisq.append(new_chisq)
+        step_taken += 1
+    print(step_taken)
+    par_errs = np.sqrt(np.diag(np.linalg.inv(curv)))
+
+
+
+print(pars)
+
+with open("planck_chain.txt" , 'wb') as f:
+    np.savetxt(f, pars, delimiter=' ', newline='\n', header='', footer='', comments='# ')
+
+

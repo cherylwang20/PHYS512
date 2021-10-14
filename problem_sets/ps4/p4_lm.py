@@ -54,19 +54,16 @@ der = np.zeros([len(multi), len(pars)])
 for n in range(len(pars)):
     der[:,n] = deriv(ff, pars[n],n)
 
+with open("deriv_matrix.txt" , 'wb') as f:
+    np.savetxt(f, der, delimiter=' ', newline='\n', header='', footer='', comments='# ')
 
-def get_matrices(pars, fun, der, y, Ninv=None):
+def get_matrices(pars, fun, der, y):
     model = fun(pars)
     derivs = der
     r = y - model
-    if Ninv is None:
-        lhs = derivs.T @ derivs
-        rhs = derivs.T @ r
-        chisq = np.sum((r/errs) ** 2)
-    else:
-        lhs = derivs.T @ Ninv @ derivs
-        rhs = derivs.T @ (Ninv @ r)
-        chisq = r.T @ Ninv @ r
+    lhs = derivs.T @ derivs
+    rhs = derivs.T @ r
+    chisq = np.sum((r/errs) ** 2)
     return chisq, lhs, rhs
 
 def linv(mat, lamda):
@@ -74,21 +71,14 @@ def linv(mat, lamda):
     return np.linalg.inv(mat)
 
 
-def fit_lm_clean(m, fun, der, y, Ninv=None, niter=10, chitol=0.01):
-    # levenberg-marquardt fitter that doesn't wastefully call extra
-    # function evaluations, plus supports noise
+def fit_lm_clean(m, fun, der, y, niter=10, chitol=0.01):
     lamda = 0
-    chisq, lhs, rhs = get_matrices(m, fun, der, y, Ninv)
+    chisq, lhs, rhs = get_matrices(m, fun, der, y)
     for i in range(niter):
         lhs_inv = linv(lhs, lamda)
         dm = lhs_inv @ rhs
-        chisq_new, lhs_new, rhs_new = get_matrices(m + dm, fun, der, y, Ninv)
+        chisq_new, lhs_new, rhs_new = get_matrices(m + dm, fun, der, y)
         if chisq_new < chisq:
-            # accept the step
-            # check if we think we are converged - for this, check if
-            # lamda is zero (i.e. the steps are sensible), and the change in
-            # chi^2 is very small - that means we must be very close to the
-            # current minimum
             if lamda == 0:
                 if (np.abs(chisq - chisq_new) < chitol):
                     print(np.abs(chisq - chisq_new))
