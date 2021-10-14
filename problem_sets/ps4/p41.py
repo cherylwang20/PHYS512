@@ -11,10 +11,10 @@ multi = dat[:,0]; var = dat[:,1];
 lowsig = dat[:,2]; highsig = dat[:,3];
 errs = 0.5*(lowsig + highsig);
 
-print(len(multi))
 
 # pre define a set of parameters
-pars=np.asarray([69,0.022,0.12,0.06,2.10e-9,0.95])
+pars = np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0])
+#pars = np.asarray([69,0.022, 0.12, 0.06, 2.10e-9,0.95 ])
 
 
 def get_spectrum(pars,lmax=3000):
@@ -26,7 +26,7 @@ def get_spectrum(pars,lmax=3000):
     As=pars[4]
     ns=pars[5]
     pars=camb.CAMBparams()
-    pars.set_cosmology(H0=H0,ombh2=ombh2,omch2=omch2,mnu=0.06,omk=0,tau=tau)
+    pars.set_cosmology(H0=H0,ombh2=ombh2,omch2=omch2,mnu=0.06,omk=0,tau = tau)
     pars.InitPower.set_params(As=As,ns=ns,r=0)
     pars.set_for_lmax(lmax,lens_potential_accuracy=0)
     results=camb.get_results(pars)
@@ -37,13 +37,15 @@ def get_spectrum(pars,lmax=3000):
     return tt[:len(var)]
 
 def ff(x,n):
+    pars = np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0])
     pars[n] = x
+    print(pars)
     v = get_spectrum(pars)
     return v
 
 #numerial differentiator from Q1
 def deriv(f, x,n):
-    dx = 0.01*x
+    dx = 0.0001*x
     x1 = x + 2 * dx
     x2 = x + dx
     x3 = x - dx
@@ -63,13 +65,16 @@ def fit_newton(pars,fun,derivs,y,niter=15):
     chisq = 3272
     for i in range(niter):
         model = fun(pars)
-        r=y-model
+        r= y - model
         lhs=derivs.T@derivs
         rhs=derivs.T@r
         dm=np.linalg.inv(lhs)@rhs
         pars=pars+dm
-        chisq2 = np.sum((r / errs) ** 2)
+        chisq2 = np.sum((r/errs) ** 2)
         print('on iteration ', i, ' chisq is ', chisq2, ' with step ', dm)
+        if pars[3] < 0:
+            par_errs = np.sqrt(np.diag(np.linalg.inv(lhs)))
+            return pars - dm , par_errs
         if abs(chisq2-chisq) < 0.001:
             par_errs = np.sqrt(np.diag(np.linalg.inv(lhs)))
             break

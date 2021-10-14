@@ -4,8 +4,8 @@ import camb
 from camb import model, initialpower
 from scipy import interpolate
 
-
 dat = np.loadtxt('COM_PowerSpect_CMB-TT-full_R3.01.txt',skiprows=1)
+curv = np.loadtxt('curvature_matrix.txt').reshape(4, 2)
 
 multi = dat[:,0]; var = dat[:,1];
 lowsig = dat[:,2]; highsig = dat[:,3];
@@ -35,3 +35,28 @@ def get_spectrum(pars,lmax=3000):
     tt=cmb[:,0]
     tt = tt[2:]
     return tt[:len(var)]
+
+def deriv(f, x, n):
+    dx = 0.01*x
+    x1 = x + 2 * dx
+    x2 = x + dx
+    x3 = x - dx
+    x4 = x - 2 * dx
+    return (f(x4,n) - 8 * f(x3,n) + 8 * f(x2,n) - f(x1,n)) / (12 * dx)
+
+def ff(x,n):
+    pars = np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0])
+    pars[n] = x
+    print(pars)
+    v = get_spectrum(pars)
+    return v
+
+der = np.zeros([len(multi), len(pars)])
+
+#create the dervative matrix
+for n in range(len(pars)):
+    der[:,n] = deriv(ff, pars[n],n)
+
+def step_size():
+
+    return
