@@ -128,18 +128,10 @@ with open("curvature_matrix.txt" , 'wb') as f:
 
 
 output = [fit[0],fit[1]]
+with open("planck_fit_params_lm.txt" , 'wb') as f:
+    np.savetxt(f, output, delimiter=' ', newline='\n', header='', footer='', comments='# ')
+
+
 output_new = [fit_new[0],fit_new[1]]
-
-Array = np.array(output)
-Array_new = np.array(output_new)
-
-file = open("planck_fit_params_lm.txt", "w+")
-content = str(Array)
-file.write(content)
-file.close()
-
-
-file = open("planck_fit_params_lm_new.txt","w+")
-content_new = str(Array_new)
-file.write(content_new)
-file.close()
+with open("planck_fit_params_lm_new.txt" , 'wb') as f:
+    np.savetxt(f, output_new, delimiter=' ', newline='\n', header='', footer='', comments='# ')

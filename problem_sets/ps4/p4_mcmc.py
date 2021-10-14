@@ -5,7 +5,7 @@ from camb import model, initialpower
 from scipy import interpolate
 
 dat = np.loadtxt('COM_PowerSpect_CMB-TT-full_R3.01.txt',skiprows=1)
-curv = np.loadtxt('curvature_matrix.txt').reshape(4, 2)
+curv = np.loadtxt('curvature_matrix.txt')
 
 multi = dat[:,0]; var = dat[:,1];
 lowsig = dat[:,2]; highsig = dat[:,3];
