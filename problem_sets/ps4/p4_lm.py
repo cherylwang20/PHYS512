@@ -11,8 +11,8 @@ multi = dat[:,0]; var = dat[:,1];
 lowsig = dat[:,2]; highsig = dat[:,3];
 errs = 0.5*(lowsig + highsig);
 
-pars=np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0])
-pars_new = np.asarray([69,0.022, 0.12, 0.06, 2.10e-9,0.95 ])
+pars=np.asarray([65,0.021,0.11,0.055,2.05e-9,0.97])
+#pars_new = np.asarray([69,0.022, 0.12, 0.06, 2.10e-9,0.95 ])
 
 def get_spectrum(pars,lmax=3000):
     H0=pars[0]
@@ -42,7 +42,7 @@ def deriv(f, x, n):
     return (f(x4,n) - 8 * f(x3,n) + 8 * f(x2,n) - f(x1,n)) / (12 * dx)
 
 def ff(x,n):
-    pars = np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0])
+    pars = [65,0.021,0.11,0.055,2.05e-9,0.97]
     pars[n] = x
     print(pars)
     v = get_spectrum(pars)
@@ -110,7 +110,7 @@ def update_lamda(lamda,success):
     return lamda
 
 fit = fit_lm_clean(pars,get_spectrum,der,var)
-fit_new = fit_lm_clean(pars_new,get_spectrum,der,var)
+#fit_new = fit_lm_clean(pars_new,get_spectrum,der,var)
 
 curv = fit[2]
 with open("curvature_matrix.txt" , 'wb') as f:
@@ -122,6 +122,6 @@ with open("planck_fit_params_lm.txt" , 'wb') as f:
     np.savetxt(f, output, delimiter=' ', newline='\n', header='', footer='', comments='# ')
 
 
-output_new = [fit_new[0],fit_new[1]]
-with open("planck_fit_params_lm_new.txt" , 'wb') as f:
-    np.savetxt(f, output_new, delimiter=' ', newline='\n', header='', footer='', comments='# ')
+# output_new = [fit_new[0],fit_new[1]]
+# with open("planck_fit_params_lm_new.txt" , 'wb') as f:
+#     np.savetxt(f, output_new, delimiter=' ', newline='\n', header='', footer='', comments='# ')
