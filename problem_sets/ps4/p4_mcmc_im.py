@@ -5,7 +5,7 @@ from camb import model, initialpower
 from scipy import interpolate
 
 dat = np.loadtxt('COM_PowerSpect_CMB-TT-full_R3.01.txt',skiprows=1)
-step_size = np.loadtxt('step_size_i.txt')
+step_size = np.loadtxt('step_size_i_2.txt')
 
 multi = dat[:,0]; var = dat[:,1];
 lowsig = dat[:,2]; highsig = dat[:,3];
@@ -40,16 +40,14 @@ def get_spectrum(pars,lmax=3000):
 pars = [] # later append
 #pars.append(np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0]))
 
-pars.append(np.asarray([68.74571957869041, 0.0220643823436287, 0.12071805629036651, 0.05033716294196364, 2.067806480026439e-09,
-        0.9504832149645627]))
+pars.append(np.asarray([67.46324278001316, 0.021104020084927275, 0.11031931129206142, 0.045996895709082574, 1.980666183854593e-09, 0.9713849155680991]))
 chisq = [] # later append
 #model = get_spectrum([60,0.02,0.1,0.05,2.00e-9,1.0])
-model = get_spectrum([68.74571957869041, 0.0220643823436287, 0.12071805629036651, 0.05033716294196364, 2.067806480026439e-09,
-        0.9504832149645627])
+model = get_spectrum([67.46324278001316, 0.021104020084927275, 0.11031931129206142, 0.045996895709082574, 1.980666183854593e-09, 0.9713849155680991])
 chisq.append(get_chisq(var, model))
 
 
-nstep = 1500;
+nstep = 10000;
 step_taken = 0
 
 def get_step(step_size):
@@ -84,7 +82,7 @@ for i in range(nstep):
 
 print(output)
 
-with open("planck_chain_tauprior.txt" , 'wb') as f:
+with open("planck_chain_tauprior_2.txt" , 'wb') as f:
     np.savetxt(f, output, delimiter=' ', newline='\n', header='', footer='', comments='# ')
 
 

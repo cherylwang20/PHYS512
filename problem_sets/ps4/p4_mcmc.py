@@ -39,14 +39,14 @@ def get_spectrum(pars,lmax=3000):
 # pre define a set of parameters
 pars = [] # later append
 #pars.append(np.asarray([60,0.02,0.1,0.05,2.00e-9,1.0]))
-pars.append(np.asarray([69,0.022, 0.12, 0.06, 2.10e-9,0.95 ]))
+pars.append(np.asarray([67,0.021,0.11,0.055,2.05e-9,0.97]))
 chisq = [] # later append
 #model = get_spectrum([60,0.02,0.1,0.05,2.00e-9,1.0])
-model = get_spectrum([69,0.022, 0.12, 0.06, 2.10e-9,0.95 ])
+model = get_spectrum([67,0.021,0.11,0.055,2.05e-9,0.97])
 chisq.append(get_chisq(var, model))
 
 
-nstep = 1500;
+nstep = 10000;
 step_size = np.linalg.cholesky(np.linalg.inv(curv))
 step_taken = 0
 
@@ -70,7 +70,7 @@ while nstep > step_taken:
     print(prob_step)
     accept = np.random.rand(1) < prob_step
 
-    if accept:
+    if accept and pars_new[3] > 0.01:
         pars.append(pars_new)
         chisq.append(new_chisq)
         step_taken += 1
@@ -84,7 +84,7 @@ for i in range(nstep):
 
 print(output)
 
-with open("planck_chain.txt" , 'wb') as f:
+with open("planck_chain_3.txt" , 'wb') as f:
     np.savetxt(f, output, delimiter=' ', newline='\n', header='', footer='', comments='# ')
 
 
