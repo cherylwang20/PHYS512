@@ -71,7 +71,7 @@ def linv(mat, lamda):
     return np.linalg.inv(mat)
 
 
-def fit_lm_clean(m, fun, der, y, niter=10, chitol=0.01):
+def fit_lm_clean(m, fun, der, y, niter=20, chitol=0.01):
     lamda = 0
     chisq, lhs, rhs = get_matrices(m, fun, der, y)
     for i in range(niter):
