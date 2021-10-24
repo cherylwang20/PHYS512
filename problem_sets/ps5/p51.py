@@ -40,14 +40,27 @@ def shift_cor(a1,a2, n):
     return output,new_a2,a1
 n = 2
 Shift_Gauss, shift_fun , new_y= shift_cor(y,y,n)
-plt.plot(x,shift_fun,'r',label = 'Shifted Gauss')
-plt.plot(x,new_y,'g',label = "Original Gauss")
-plt.plot(x,Shift_Gauss,label = 'Correlated Function')
-plt.title(f'Correlation of Gaussian with shift of {1/n} of its length')
-plt.legend()
-plt.savefig(f'Corr_Shift_{1/n}.png',dpi = 300, bbox_inches = 'tight')
-plt.show()
+# plt.plot(x,shift_fun,'r',label = 'Shifted Gauss')
+# plt.plot(x,new_y,'g',label = "Original Gauss")
+# plt.plot(x,Shift_Gauss,label = 'Correlated Function')
+# plt.title(f'Correlation of Gaussian with shift of {1/n} of its length')
+# plt.legend()
+# plt.savefig(f'Corr_Shift_{1/n}.png',dpi = 300, bbox_inches = 'tight')
+# plt.show()
 
 
 def conv_safe(f,g):
-    return
+    N = len(f) + len(g) - 1
+    N1 = N - len(f)
+    N2 = N - len(g)
+    f_new = np.pad(f, (0, N1))
+    g_new = np.pad(g, (0, N2))
+    fg = np.abs(np.fft.ifft(np.fft.fft(f_new)*np.fft.fft(g_new)))
+    return fg
+
+g = np.sin(x)
+ygconv = conv_safe(y,g)
+plt.plot(ygconv,'orange')
+plt.title('Convolution of Gauss and Sin Functions')
+plt.savefig("Conv_safe_Gauss_Sin.png",dpi = 300, bbox_inches = 'tight')
+plt.show()
