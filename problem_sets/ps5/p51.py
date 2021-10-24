@@ -1,18 +1,53 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-def con_shift(array,x):
-    return
+def con_shift(array,x,n =2):
+    shift = len(x) / n
+    kvec = np.arange(len(x))
+    J = np.complex(0, 1)
+    yft_shift = np.fft.fft(y) * np.exp(-2 * np.pi * J * kvec * shift / len(x))
+    y_shift = np.real(np.fft.ifft(yft_shift))
+    return y_shift
 x = np.arange(-10,10,.05)
-y = np.exp(-0.5*x**2/(1.5**2))
-shift = len(x)/2
-kvec = np.arange(len(x))
-J = np.complex(0,1)
-print(len(kvec))
-yft_shift = np.fft.fft(y)*np.exp(-2*np.pi*J*kvec*shift/len(x))
-y_shift = np.real(np.fft.ifft(yft_shift))
+y = np.exp(-0.5*x**2/(0.8**2))
 
-plt.plot(x,y)
-plt.plot(x,y_shift)
-plt.savefig("gauss_shift.png",dpi = 300, bbox_inches = 'tight')
+gauss_shift = con_shift(y,x)
+
+
+# plt.plot(x,y)
+# plt.plot(x,gauss_shift)
+# plt.title('Half shift of Gaussian')
+# plt.savefig("gauss_shift.png",dpi = 300, bbox_inches = 'tight')
+# plt.show()
+
+def correl(a1, a2):
+    a1_ft = np.fft.fft(a1)
+    a2_ft = np.fft.fft(a2)
+    cor = np.fft.ifft(a1_ft*np.conj(a2_ft))
+    return cor
+
+cor = correl(y,y)
+# plt.plot(x,cor)
+# plt.title('Correlation of two Gaussian')
+# plt.savefig("Corr_Gauss.png",dpi = 300, bbox_inches = 'tight')
+# plt.show()
+
+def shift_cor(a1,a2, n):
+    new_a2 = con_shift(a2, x, n)
+    new_a2 = new_a2/new_a2.sum()
+    a1 = a1/a1.sum()
+    output = correl(a1,new_a2)
+    return output,new_a2,a1
+n = 2
+Shift_Gauss, shift_fun , new_y= shift_cor(y,y,n)
+plt.plot(x,shift_fun,'r',label = 'Shifted Gauss')
+plt.plot(x,new_y,'g',label = "Original Gauss")
+plt.plot(x,Shift_Gauss,label = 'Correlated Function')
+plt.title(f'Correlation of Gaussian with shift of {1/n} of its length')
+plt.legend()
+plt.savefig(f'Corr_Shift_{1/n}.png',dpi = 300, bbox_inches = 'tight')
 plt.show()
+
+
+def conv_safe(f,g):
+    return
