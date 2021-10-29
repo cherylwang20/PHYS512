@@ -1,24 +1,30 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy import signal
 
 def con_shift(array,x,n =2):
-    shift = len(x) / n
+    shift = int(len(x) / n)
+    N = len(x)
     kvec = np.arange(len(x))
     J = np.complex(0, 1)
-    yft_shift = np.fft.fft(y) * np.exp(-2 * np.pi * J * kvec * shift / len(x))
-    y_shift = np.real(np.fft.ifft(yft_shift))
+    g = signal.unit_impulse(N,shift-1)
+    g_fft = np.fft.fft(g)
+    yft_shift = np.fft.fft(y)
+    # de = np.exp(-2 * np.pi * J * kvec * shift / len(x))
+
+    y_shift = np.real(np.fft.ifft(yft_shift*g_fft))
     return y_shift
 x = np.arange(-10,10,.05)
 y = np.exp(-0.5*x**2/(0.8**2))
 
-gauss_shift = con_shift(y,x)
+gauss_shift = con_shift(y,x,2)
 
 
-# plt.plot(x,y)
-# plt.plot(x,gauss_shift)
-# plt.title('Half shift of Gaussian')
-# plt.savefig("gauss_shift.png",dpi = 300, bbox_inches = 'tight')
-# plt.show()
+plt.plot(x,y)
+plt.plot(x,gauss_shift)
+plt.title('Half shift of Gaussian')
+plt.savefig("gauss_shift.png",dpi = 300, bbox_inches = 'tight')
+plt.show()
 
 def correl(a1, a2):
     a1_ft = np.fft.fft(a1)
