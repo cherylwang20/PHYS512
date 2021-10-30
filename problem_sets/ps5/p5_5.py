@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.fftpack import fft, ifft
 
-N = 1024
+N = 512
 k = 10.4
 x = np.arange(N)
 y = np.sin(2*np.pi*k*x/N)
@@ -35,7 +35,7 @@ print(f'The residue between the functions are: {res}, with N = {N}.' )
 #the closer to the end, the larger the residue.
 plt.plot(fn, f - y_ft)
 plt.title('Residual between the two functions')
-plt.savefig(f'Residual.png',dpi = 300, bbox_inches = 'tight')
+plt.savefig(f'Residual_k = {k}_N = {N}.png',dpi = 300, bbox_inches = 'tight')
 plt.show()
 
 win = 0.5 - 0.5*np.cos(2*np.pi*x/N)
@@ -43,7 +43,13 @@ y_win = y*win
 y_win_ft = np.abs(np.fft.fft(y_win))
 
 
-plt.plot(fn, y_win_ft, label = 'Windowed Function')
-plt.legend()
-plt.savefig(f'Sine_Window.png',dpi = 300, bbox_inches = 'tight')
+# plt.plot(fn, y_win_ft, label = 'Windowed Function')
+# plt.legend()
+# plt.savefig(f'Sine_Window.png',dpi = 300, bbox_inches = 'tight')
+# plt.show()
+
+win_ft = np.real(np.fft.fft(win))
+plt.plot(fn, win_ft)
 plt.show()
+
+print(f'By taking the DFT of the Window function, we have the first two terms as:{win_ft[0:2]} and the last terms as {win_ft[-1]}.')
