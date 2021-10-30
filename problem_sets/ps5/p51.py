@@ -17,14 +17,14 @@ def con_shift(array,x,n =2):
 x = np.arange(-10,10,.05)
 y = np.exp(-0.5*x**2/(0.8**2))
 
-gauss_shift = con_shift(y,x,2)
+gauss_shift = con_shift(y,x,3)
 
 
-plt.plot(x,y)
-plt.plot(x,gauss_shift)
-plt.title('Half shift of Gaussian')
-plt.savefig("gauss_shift.png",dpi = 300, bbox_inches = 'tight')
-plt.show()
+# plt.plot(x,y)
+# plt.plot(x,gauss_shift)
+# plt.title('1/3 shift of Gaussian')
+# plt.savefig("gauss_shift_new.png",dpi = 300, bbox_inches = 'tight')
+# plt.show()
 
 def correl(a1, a2):
     a1_ft = np.fft.fft(a1)
@@ -44,7 +44,7 @@ def shift_cor(a1,a2, n):
     a1 = a1/a1.sum()
     output = correl(a1,new_a2)
     return output,new_a2,a1
-n = 2
+n = 3
 Shift_Gauss, shift_fun , new_y= shift_cor(y,y,n)
 # plt.plot(x,shift_fun,'r',label = 'Shifted Gauss')
 # plt.plot(x,new_y,'g',label = "Original Gauss")
@@ -63,8 +63,8 @@ def conv_safe(f,g):
     g_new = np.pad(g, (0, N2))
     fg = np.abs(np.fft.ifft(np.fft.fft(f_new)*np.fft.fft(g_new)))
     return fg
-
-g = np.sin(x)
+xg = np.arange(-10,10,.01)
+g = np.sin(xg)
 ygconv = conv_safe(y,g)
 plt.plot(ygconv,'orange')
 plt.title('Convolution of Gauss and Sin Functions')
