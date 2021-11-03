@@ -20,15 +20,17 @@ data = json.load(f)
 
 print(json.dumps(data, indent = 4, sort_keys=True))
 
-H1, H2, H3, H4 = strain_H
 
 
 n  = len(strain_H[0])
+nl = len(strain_L[0])
 win = window(len(strain_H[0]), n//5)
 th_ft = np.abs(np.fft.rfft(th))
 tl_ft = np.abs(np.fft.rfft(tl))
 strain_ft = np.fft.rfft(strain_H*win)
+strain_ftl = np.fft.rfft(strain_L*win)
 sft = np.sum(np.abs(strain_ft),axis = 0)/4
+sft_l = np.sum(np.abs(strain_ftl),axis = 0)/4
 
 print(sft)
 
@@ -38,16 +40,20 @@ print(sft)
 
 # Noise Model?
 Nft_1 = np.abs(sft)**2
+Nft_2 = np.abs(sft_l)**2
 Nft = Nft_1.copy()
+Nftl = Nft_2.copy()
 # smooth out the noise model:
 for i in range(10):
     Nft_H = (Nft + np.roll(Nft, 1) + np.roll(Nft, -1))/3
+    Nft_L = (Nftl + np.roll(Nftl, 1) + np.roll(Nftl, -1))/3
 
-# plt.loglog(Nft_1, label = 'unsmoothed')
-# plt.loglog(Nft_H, label = 'smoothed')
-# plt.legend()
-# plt.savefig(f'Noise_Model_H.png',dpi = 300, bbox_inches = 'tight')
-# plt.show()
+plt.loglog(Nft_2, label = 'unsmoothed')
+plt.loglog(Nft_L, label = 'smoothed')
+plt.legend()
+plt.title('Noise Model for Livingston Detector')
+plt.savefig(f'Noise_Model_L.png',dpi = 300, bbox_inches = 'tight')
+plt.show()
 
 
 sft_white = sft/np.sqrt(Nft_H)
@@ -56,8 +62,9 @@ th_white = np.fft.irfft(th_white_ft)
 
 # match-filtering the data set
 xcorr2 = np.fft.irfft(sft_white*np.conj(th_white_ft))
-#plt.plot(np.fft.fftshift(xcorr2))
 
+
+# calculate the noise and SNR of each run
 Noise = [0]*4
 SNR = [0]*4
 for i in range(4):
@@ -71,13 +78,6 @@ for i in range(4):
     plt.title(f'Match Filtering of #{i+1} GW event in Hanford \n with Noise = {Noise[i]:.3f} and SNR = {SNR[i]:.3f}.')
     plt.savefig(f'GW{i + 1}_H.png', dpi=300, bbox_inches='tight')
     plt.show()
-
-# Noise = np.std(xcorr2[0,:-2000])
-# print(np.std(xcorr2[0,2000:]),np.std(xcorr2[0,:-2000]))
-# SNR = np.max(xcorr2[0])/Noise
-
-
-
 
 xcorr = np.fft.irfft(sft*np.fft.rfft(th[0]*window(len(th[0]),n //5)))
 plt.plot(xcorr)
