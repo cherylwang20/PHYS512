@@ -34,13 +34,22 @@ def read_file(filename):
 
 #fnames=glob.glob("[HL]-*.hdf5")
 #fname=fnames[0]
-fname='H-H1_LOSC_4_V2-1126259446-32.hdf5'
-print('reading file ',fname)
-strain,dt,utc=read_file(fname)
+H=['H-H1_LOSC_4_V2-1126259446-32.hdf5','H-H1_LOSC_4_V2-1135136334-32.hdf5','H-H1_LOSC_4_V1-1167559920-32.hdf5','H-H1_LOSC_4_V2-1128678884-32.hdf5']
+L = ['L-L1_LOSC_4_V2-1126259446-32.hdf5','L-L1_LOSC_4_V2-1135136334-32.hdf5','L-L1_LOSC_4_V1-1167559920-32.hdf5','L-L1_LOSC_4_V2-1128678884-32.hdf5']
+strain_H = [0]*len(H)
+strain_L = [0]*len(H)
+for i in range(len(H)):
+    print('reading file ',H[i],'and',L[i])
+    strain_H[i],dt_H,utc_H= read_file(H[i])
+    strain_L[i], dt_L, utc_L = read_file(L[i])
 
 #th,tl=read_template('GW150914_4_template.hdf5')
-template_name='GW150914_4_template.hdf5'
-th,tl=read_template(template_name)
+GW=['GW150914_4_template.hdf5','GW151226_4_template.hdf5','GW170104_4_template.hdf5','LVT151012_4_template.hdf5']
+
+th = [0]*len(GW)
+tl = [0]*len(GW)
+for i in range(len(GW)):
+    th[i],tl[i]=read_template(GW[i])
 
 
 #spec,nu=measure_ps(strain,do_win=True,dt=dt,osamp=16)
