@@ -57,20 +57,29 @@ plt.show()
 
 
 sft_white = sft/np.sqrt(Nft_H)
+sft_white_l = sft_l/np.sqrt(Nft_L)
 th_white_ft = np.fft.rfft(th*win)/np.sqrt(Nft_H)
+tl_white_ft = np.fft.rfft(tl*win)/np.sqrt(Nft_L)
 th_white = np.fft.irfft(th_white_ft)
+tl_white = np.fft.irfft(tl_white_ft)
 
 # match-filtering the data set
 xcorr2 = np.fft.irfft(sft_white*np.conj(th_white_ft))
+xcorrl = np.fft.irfft(sft_white_l*np.conj(tl_white_ft))
 
 
 # calculate the noise and SNR of each run
 Noise = [0]*4
+Noise_l = [0]*4
 SNR = [0]*4
+SNR_l = [0]*4
 for i in range(4):
     Noise[i] = np.std(xcorr2[i, :-2000])
+    Noise_l[i] = np.std(xcorrl[i, :-2000])
     SNR[i] = np.max(xcorr2[i]) / Noise[i]
-    print(f'#{i} GW event has Noise of: {Noise[i]} and SNR = {SNR[i]}')
+    SNR_l[i] = np.max(xcorrl[i]) / Noise_l[i]
+    print(f'#{i} GW event at Hanford has Noise of: {Noise[i]} and SNR = {SNR[i]}')
+    print(f'#{i} GW event at Livingston has Noise of: {Noise_l[i]} and SNR = {SNR_l[i]}')
 
 for i in range(4):
     plt.plot(xcorr2[i,::-1],color = 'brown')
@@ -79,7 +88,16 @@ for i in range(4):
     plt.savefig(f'GW{i + 1}_H.png', dpi=300, bbox_inches='tight')
     plt.show()
 
+for i in range(4):
+    plt.plot(xcorrl[i,::-1],color = 'green')
+    plt.xlim([56000,67000])
+    plt.title(f'Match Filtering of #{i+1} GW event in Livingston \n with Noise = {Noise_l[i]:.3f} and SNR = {SNR_l[i]:.3f}.')
+    plt.savefig(f'GW{i + 1}_L.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
 xcorr = np.fft.irfft(sft*np.fft.rfft(th[0]*window(len(th[0]),n //5)))
+xcorl = np.fft.irfft(sft_l*np.fft.rfft(tl[0]*win))
 plt.plot(xcorr)
+plt.plot(xcorl)
 plt.show()
 
