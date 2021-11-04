@@ -93,8 +93,8 @@ for i in range(4):
     Noise_l[i] = np.std(xcorrl[i, :-2000])
     SNR[i] = np.max(xcorr2[i]) / Noise[i]
     SNR_l[i] = np.max(xcorrl[i]) / Noise_l[i]
-    print(f'#{i} GW event at Hanford has Noise of: {Noise[i]} and SNR = {SNR[i]}')
-    print(f'#{i} GW event at Livingston has Noise of: {Noise_l[i]} and SNR = {SNR_l[i]}')
+    print(f'#{i + 1} GW event at Hanford has Noise of: {Noise[i]} and SNR = {SNR[i]}')
+    print(f'#{i + 1} GW event at Livingston has Noise of: {Noise_l[i]} and SNR = {SNR_l[i]}')
 
 for i in range(4):
     plt.plot(xcorr2[i,::-1],color = 'brown')
