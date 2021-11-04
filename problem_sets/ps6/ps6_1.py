@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy.ndimage import gaussian_filter1d
+from scipy import signal
 import h5py
 import glob
 import json
@@ -9,23 +10,34 @@ exec(open("simple_read_ligo.py").read())
 f = open(r'C:\Users\wangc\PHYS512\problem_sets\ps6\LOSC_Event_tutorial\BBH_events_v3.json',)
 
 # define the window function that is flat in the middle
-def window(n,m):
-    x = np.linspace(-np.pi, np.pi, m)
-    win = 0.5 + 0.5*np.cos(x)
-    mm = m//2
-    win_flat = np.ones(n-m)
-    win_flat = np.concatenate((win[:mm],win_flat, win[-mm:]))
-    return win_flat
+# here we use the Planck-taper Window, this distribution is inspired by
+# the Planck Distribution
+def window(ep, N):
+    x = np.arange(N)
+    eN = int(ep*N)
+    win = [0]*N
+    win[:eN+1] = (1 + np.exp(eN/x - eN/(eN - x)))**(-1)
+    win[eN: -eN] = np.ones(N - 2* eN)
+    win[-eN:] = (1 + np.exp(eN/(-x + eN) - eN/x))**(-1)
+    win = win[:N]
+    return np.array(win)
+
+print(len(strain_H[0]))
+win = window(0.05, len(strain_H[0]))
+
+#win = signal.tukey(len(strain_H[0]),1/5)
+plt.plot(win)
+plt.title('The Planck-Taper Window Function')
+plt.savefig(f'Window Function.png',dpi = 300, bbox_inches = 'tight')
+plt.show()
+
 
 data = json.load(f)
 
 print(json.dumps(data, indent = 4, sort_keys=True))
 
-
-
 n  = len(strain_H[0])
 nl = len(strain_L[0])
-win = window(len(strain_H[0]), n//5)
 th_ft = np.abs(np.fft.rfft(th))
 tl_ft = np.abs(np.fft.rfft(tl))
 strain_ft = np.fft.rfft(strain_H*win)
@@ -33,19 +45,14 @@ strain_ftl = np.fft.rfft(strain_L*win)
 sft = np.sum(np.abs(strain_ft),axis = 0)/4
 sft_l = np.sum(np.abs(strain_ftl),axis = 0)/4
 
-print(sft)
-
-# for i in range(4):
-#     plt.loglog(np.abs(strain_ft[i]))
-# plt.show()
 
 # Noise Model?
 Nft_1 = np.abs(sft)**2
 Nft_2 = np.abs(sft_l)**2
 Nft = Nft_1.copy()
 Nftl = Nft_2.copy()
-# smooth out the noise model:
 
+# smooth out the noise model using a 1D Gaussian Filter
 Nft_H = gaussian_filter1d(Nft, 1)
 Nft_L = gaussian_filter1d(Nftl, 1)
 
@@ -103,7 +110,7 @@ for i in range(4):
     plt.savefig(f'GW{i + 1}_L.png', dpi=300, bbox_inches='tight')
     plt.show()
 
-xcorr = np.fft.irfft(sft*np.fft.rfft(th[0]*window(len(th[0]),n //5)))
+xcorr = np.fft.irfft(sft*np.fft.rfft(th[0]*win))
 xcorl = np.fft.irfft(sft_l*np.fft.rfft(tl[0]*win))
 plt.plot(xcorr)
 plt.plot(xcorl)
