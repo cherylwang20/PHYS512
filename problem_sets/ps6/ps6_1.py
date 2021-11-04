@@ -1,5 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.ndimage import gaussian_filter1d
 import h5py
 import glob
 import json
@@ -44,12 +45,19 @@ Nft_2 = np.abs(sft_l)**2
 Nft = Nft_1.copy()
 Nftl = Nft_2.copy()
 # smooth out the noise model:
-for i in range(10):
-    Nft_H = (Nft + np.roll(Nft, 1) + np.roll(Nft, -1))/3
-    Nft_L = (Nftl + np.roll(Nftl, 1) + np.roll(Nftl, -1))/3
+
+Nft_H = gaussian_filter1d(Nft, 1)
+Nft_L = gaussian_filter1d(Nftl, 1)
+
+plt.loglog(Nft_1, label = 'unsmoothed')
+plt.loglog(Nft_H, label = 'Gaussian smoothed')
+plt.legend()
+plt.title('Noise Model for Hanford Detector')
+plt.savefig(f'Noise_Model_H.png',dpi = 300, bbox_inches = 'tight')
+plt.show()
 
 plt.loglog(Nft_2, label = 'unsmoothed')
-plt.loglog(Nft_L, label = 'smoothed')
+plt.loglog(Nft_L, label = 'Gaussian smoothed')
 plt.legend()
 plt.title('Noise Model for Livingston Detector')
 plt.savefig(f'Noise_Model_L.png',dpi = 300, bbox_inches = 'tight')
@@ -83,14 +91,14 @@ for i in range(4):
 
 for i in range(4):
     plt.plot(xcorr2[i,::-1],color = 'brown')
-    plt.xlim([56000,67000])
+    plt.xlim([62000,67000])
     plt.title(f'Match Filtering of #{i+1} GW event in Hanford \n with Noise = {Noise[i]:.3f} and SNR = {SNR[i]:.3f}.')
     plt.savefig(f'GW{i + 1}_H.png', dpi=300, bbox_inches='tight')
     plt.show()
 
 for i in range(4):
     plt.plot(xcorrl[i,::-1],color = 'green')
-    plt.xlim([56000,67000])
+    plt.xlim([62000,67000])
     plt.title(f'Match Filtering of #{i+1} GW event in Livingston \n with Noise = {Noise_l[i]:.3f} and SNR = {SNR_l[i]:.3f}.')
     plt.savefig(f'GW{i + 1}_L.png', dpi=300, bbox_inches='tight')
     plt.show()
