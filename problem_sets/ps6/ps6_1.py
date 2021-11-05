@@ -132,10 +132,10 @@ SNR_l = [0]*4
 for i in range(4):
     Noise[i] = np.std(xcorr2[i, :-2000])
     Noise_l[i] = np.std(xcorrl[i, :-2000])
-    SNR[i] = np.max(xcorr2[i]) / Noise[i]
-    SNR_l[i] = np.max(xcorrl[i]) / Noise_l[i]
-    print(f'#{i + 1} GW event at Hanford has Noise of: {Noise[i]} and SNR = {SNR[i]}')
-    print(f'#{i + 1} GW event at Livingston has Noise of: {Noise_l[i]} and SNR = {SNR_l[i]}')
+    SNR[i] = (np.max(xcorr2[i]) - np.min(xcorr2[i])) / Noise[i]
+    SNR_l[i] = (np.max(xcorrl[i]) + np.abs(np.min(xcorrl[i]))) / Noise_l[i]
+    print(f'#{i + 1} GW event at Hanford has Noise of: {Noise[i]:.3f} and SNR = {SNR[i]:.3f}')
+    print(f'#{i + 1} GW event at Livingston has Noise of: {Noise_l[i]:.3f} and SNR = {SNR_l[i]:.3f}')
 
 for i in range(4):
     plt.plot(np.fft.fftshift(xcorr2[i]),color = 'brown')
@@ -165,8 +165,8 @@ for i in range(4):
     Noise_al[i] = np.std(sigma_l[i, :-2000])
     SNR_ah[i] = np.max(sigma_h[i]) / Noise_ah[i]
     SNR_al[i] = np.max(sigma_l[i]) / Noise_al[i]
-    print(f'#{i + 1} Noise Model at Hanford has Noise of: {Noise_ah[i]} and SNR = {SNR_ah[i]}')
-    print(f'#{i + 1} Noise Model at Livingston has Noise of: {Noise_al[i]} and SNR = {SNR_al[i]}')
+    print(f'#{i + 1} Noise Model at Hanford has Noise of: {Noise_ah[i]:.3f} and SNR = {SNR_ah[i]:.3f}')
+    print(f'#{i + 1} Noise Model at Livingston has Noise of: {Noise_al[i]:.3f} and SNR = {SNR_al[i]:.3f}')
 
 for i in range(4):
     plt.plot(np.fft.fftshift(sigma_h[1]))
