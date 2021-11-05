@@ -38,13 +38,19 @@ H=['H-H1_LOSC_4_V2-1126259446-32.hdf5','H-H1_LOSC_4_V2-1135136334-32.hdf5','H-H1
 L = ['L-L1_LOSC_4_V2-1126259446-32.hdf5','L-L1_LOSC_4_V2-1135136334-32.hdf5','L-L1_LOSC_4_V1-1167559920-32.hdf5','L-L1_LOSC_4_V2-1128678884-32.hdf5']
 strain_H = [0]*len(H)
 strain_L = [0]*len(H)
+utc_H = [0]*len(H)
+utc_L = [0]*len(H)
+dt_H = [0]*len(H)
+dt_L = [0]*len(H)
 for i in range(len(H)):
     print('reading file ',H[i],'and',L[i])
-    strain_H[i],dt_H,utc_H= read_file(H[i])
-    strain_L[i], dt_L, utc_L = read_file(L[i])
+    strain_H[i],dt_H,utc_H[i]= read_file(H[i])
+    strain_L[i], dt_L, utc_L[i] = read_file(L[i])
 
 #th,tl=read_template('GW150914_4_template.hdf5')
 GW=['GW150914_4_template.hdf5','GW151226_4_template.hdf5','GW170104_4_template.hdf5','LVT151012_4_template.hdf5']
+
+
 
 th = [0]*len(GW)
 tl = [0]*len(GW)

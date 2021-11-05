@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 from scipy.integrate import quad
+import scipy
 from scipy import signal
 import h5py
 import glob
@@ -24,7 +25,7 @@ def window(ep, N):
     return np.array(win)
 
 print(len(strain_H[0]))
-win = window(0.05, len(strain_H[0]))
+win = window(0.1, len(strain_H[0]))
 
 #win = signal.tukey(len(strain_H[0]),1/5)
 plt.plot(win)
@@ -49,10 +50,16 @@ Nft_2 = np.abs(strain_ftl)**2
 Nft = Nft_1.copy()
 Nftl = Nft_2.copy()
 
+Nft_H = [0]*4
+Nft_L = [0]*4
 # smooth out the noise model using a 1D Gaussian Filter
-Nft_H = gaussian_filter1d(Nft, 1)
-Nft_L = gaussian_filter1d(Nftl, 1)
+#Nft_H = gaussian_filter1d(Nft, 1)
+for i in range(4):
+    Nft_H[i] = scipy.signal.medfilt(Nft[i], 11)
+#Nft_L = gaussian_filter1d(Nftl, 1)
+    Nft_L[i] = scipy.signal.medfilt(Nftl[i], 11)
 
+#Nft_L = gaussian_filter1d(Nftl, 1)
 # for i in range(4):
 #     plt.loglog(Nft_1[i], label = f'unsmoothed {i + 1}')
 #     plt.loglog(Nft_H[i], label = f'Gaussian smoothed {i + 1}')
@@ -67,7 +74,23 @@ Nft_L = gaussian_filter1d(Nftl, 1)
 #     plt.title(f'Noise Model for Livingston Detector {i + 1}')
 #     plt.savefig(f'Noise_Model_L{i+1}.png',dpi = 300, bbox_inches = 'tight')
 #     plt.show()
+#whi
 
+# whitening the function
+def whiten(strain, interp_psd, dt):
+    Nt = len(strain)
+    freqs = np.fft.rfftfreq(Nt, dt)
+    freqs1 = np.linspace(0,2048.,Nt/2+1)
+
+    # whitening: transform to freq domain, divide by asd, then transform back,
+    # taking care to get normalization right.
+    hf = np.fft.rfft(strain)
+    norm = 1./np.sqrt(1./(dt*2))
+    white_hf = hf / np.sqrt(interp_psd(freqs)) * norm
+    white_ht = np.fft.irfft(white_hf, n=Nt)
+    return white_ht
+
+#sft_white = whiten(strain_ft, scipy.integrate.interp1d() )
 sft_white = strain_ft /np.sqrt(Nft_H)
 sft_white_l = strain_ftl/np.sqrt(Nft_L)
 th_white_ft = np.fft.rfft(th*win)/np.sqrt(Nft_H)
@@ -157,3 +180,5 @@ for i in range(4):
 
 
 # two LIGO detectors are 3000 km apart
+print(utc_H)
+print(utc_L)
