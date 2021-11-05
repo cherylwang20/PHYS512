@@ -129,8 +129,6 @@ for i in range(4):
     plt.show()
 
 
-print(th_white_ft)
-
 sigma_h = np.sqrt(np.abs(np.fft.irfft(th_white_ft*np.conj(th_white_ft))))
 sigma_l = np.sqrt(np.abs(np.fft.irfft(tl_white_ft*np.conj(tl_white_ft))))
 
@@ -139,7 +137,6 @@ Noise_al = [0]*4
 SNR_ah= [0]*4
 SNR_al = [0]*4
 
-print(sigma_h)
 for i in range(4):
     Noise_ah[i] = np.std(sigma_h[i, :-2000])
     Noise_al[i] = np.std(sigma_l[i, :-2000])
@@ -159,3 +156,4 @@ for i in range(4):
 
 
 
+# two LIGO detectors are 3000 km apart
