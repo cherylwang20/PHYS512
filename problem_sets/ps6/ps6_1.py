@@ -47,12 +47,18 @@ strain_ftl = np.fft.rfft(strain_L*win)
 # Noise Model?
 Nft_1 = np.abs(strain_ft)**2
 Nft_2 = np.abs(strain_ftl)**2
+
+for i in range(4):
+    print(f'The Noise of the {i+1} event in Hanford is {np.mean(Nft_1[i])}')
+
+
 Nft = Nft_1.copy()
 Nftl = Nft_2.copy()
 
 Nft_H = [0]*4
 Nft_L = [0]*4
-# smooth out the noise model using a 1D Gaussian Filter
+# smooth out the noise model the medfilt model with kernel = 11
+# I have played around with the values and k = 11 gives out the most promising SNRs.
 #Nft_H = gaussian_filter1d(Nft, 1)
 for i in range(4):
     Nft_H[i] = scipy.signal.medfilt(Nft[i], 11)
@@ -172,3 +178,4 @@ max1 = np.argmax(np.abs(xcorrl), axis = 1)
 print(max1*dt_L + 16.)
 print(max*dt_H + 16.)
 print(f'The difference between the time of arrivals are: {max*dt_L - max1*dt_L}.')
+print(dt_L)
