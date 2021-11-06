@@ -59,38 +59,24 @@ for i in range(4):
 #Nft_L = gaussian_filter1d(Nftl, 1)
     Nft_L[i] = scipy.signal.medfilt(Nftl[i], 11)
 
-#Nft_L = gaussian_filter1d(Nftl, 1)
-# for i in range(4):
-#     plt.loglog(Nft_1[i], label = f'unsmoothed {i + 1}')
-#     plt.loglog(Nft_H[i], label = f'Gaussian smoothed {i + 1}')
-#     plt.legend()
-#     plt.title(f'Noise Model for Hanford Detector {i + 1}')
-#     plt.savefig(f'Noise_Model_H{i+1}.png',dpi = 300, bbox_inches = 'tight')
-#     plt.show()
-#
-#     plt.loglog(Nft_2[i], label = 'unsmoothed')
-#     plt.loglog(Nft_L[i], label = 'Gaussian smoothed')
-#     plt.legend()
-#     plt.title(f'Noise Model for Livingston Detector {i + 1}')
-#     plt.savefig(f'Noise_Model_L{i+1}.png',dpi = 300, bbox_inches = 'tight')
-#     plt.show()
-#whi
 
-# whitening the function
-def whiten(strain, interp_psd, dt):
-    Nt = len(strain)
-    freqs = np.fft.rfftfreq(Nt, dt)
-    freqs1 = np.linspace(0,2048.,Nt/2+1)
+for i in range(4):
+    plt.loglog(Nft_1[i], label = f'unsmoothed {i + 1}')
+    plt.loglog(Nft_H[i], label = f'Medfilt smoothed {i + 1}')
+    plt.legend()
+    plt.title(f'Noise Model for Hanford Detector {i + 1}')
+    plt.savefig(f'Noise_Model_H{i+1}.png',dpi = 300, bbox_inches = 'tight')
+    plt.show()
 
-    # whitening: transform to freq domain, divide by asd, then transform back,
-    # taking care to get normalization right.
-    hf = np.fft.rfft(strain)
-    norm = 1./np.sqrt(1./(dt*2))
-    white_hf = hf / np.sqrt(interp_psd(freqs)) * norm
-    white_ht = np.fft.irfft(white_hf, n=Nt)
-    return white_ht
+    plt.loglog(Nft_2[i], label = 'unsmoothed')
+    plt.loglog(Nft_L[i], label = 'Medfilt smoothed')
+    plt.legend()
+    plt.title(f'Noise Model for Livingston Detector {i + 1}')
+    plt.savefig(f'Noise_Model_L{i+1}.png',dpi = 300, bbox_inches = 'tight')
+    plt.show()
 
-#sft_white = whiten(strain_ft, scipy.integrate.interp1d() )
+
+
 sft_white = strain_ft /np.sqrt(Nft_H)
 sft_white_l = strain_ftl/np.sqrt(Nft_L)
 th_white_ft = np.fft.rfft(th*win)/np.sqrt(Nft_H)
@@ -137,19 +123,19 @@ for i in range(4):
     print(f'#{i + 1} GW event at Hanford has Noise of: {Noise[i]:.3f} and SNR = {SNR[i]:.3f}')
     print(f'#{i + 1} GW event at Livingston has Noise of: {Noise_l[i]:.3f} and SNR = {SNR_l[i]:.3f}')
 
-for i in range(4):
-    plt.plot(np.fft.fftshift(xcorr2[i]),color = 'brown')
-    #plt.xlim([62000,67000])
-    plt.title(f'Match Filtering of #{i+1} GW event in Hanford \n with Noise = {Noise[i]:.3f} and SNR = {SNR[i]:.3f}.')
-    plt.savefig(f'GW{i + 1}_H.png', dpi=300, bbox_inches='tight')
-    plt.show()
-
-for i in range(4):
-    plt.plot(np.fft.fftshift(xcorrl[i]),color = 'green')
-    #plt.xlim([62000,67000])
-    plt.title(f'Match Filtering of #{i+1} GW event in Livingston \n with Noise = {Noise_l[i]:.3f} and SNR = {SNR_l[i]:.3f}.')
-    plt.savefig(f'GW{i + 1}_L.png', dpi=300, bbox_inches='tight')
-    plt.show()
+# for i in range(4):
+#     plt.plot(np.fft.fftshift(xcorr2[i]),color = 'brown')
+#     #plt.xlim([62000,67000])
+#     plt.title(f'Match Filtering of #{i+1} GW event in Hanford \n with Noise = {Noise[i]:.3f} and SNR = {SNR[i]:.3f}.')
+#     plt.savefig(f'GW{i + 1}_H.png', dpi=300, bbox_inches='tight')
+#     plt.show()
+#
+# for i in range(4):
+#     plt.plot(np.fft.fftshift(xcorrl[i]),color = 'green')
+#     #plt.xlim([62000,67000])
+#     plt.title(f'Match Filtering of #{i+1} GW event in Livingston \n with Noise = {Noise_l[i]:.3f} and SNR = {SNR_l[i]:.3f}.')
+#     plt.savefig(f'GW{i + 1}_L.png', dpi=300, bbox_inches='tight')
+#     plt.show()
 
 
 sigma_h = np.sqrt(np.abs(np.fft.irfft(th_white_ft*np.conj(th_white_ft))))
@@ -168,17 +154,21 @@ for i in range(4):
     print(f'#{i + 1} Noise Model at Hanford has Noise of: {Noise_ah[i]:.3f} and SNR = {SNR_ah[i]:.3f}')
     print(f'#{i + 1} Noise Model at Livingston has Noise of: {Noise_al[i]:.3f} and SNR = {SNR_al[i]:.3f}')
 
-for i in range(4):
-    plt.plot(np.fft.fftshift(sigma_h[1]))
-    plt.title(f'Analytic Noise Model for Hanford #{i + 1}')
-    plt.show()
-
-    plt.plot(np.fft.fftshift(sigma_l[1]))
-    plt.title(f'Analytic Noise Model for Livingston #{i + 1}')
-    plt.show()
+# for i in range(4):
+#     plt.plot(np.fft.fftshift(sigma_h[1]))
+#     plt.title(f'Analytic Noise Model for Hanford #{i + 1}')
+#     plt.show()
+#
+#     plt.plot(np.fft.fftshift(sigma_l[1]))
+#     plt.title(f'Analytic Noise Model for Livingston #{i + 1}')
+#     plt.show()
 
 
 
 # two LIGO detectors are 3000 km apart
-print(utc_H)
-print(utc_L)
+
+max = np.argmax(np.abs(xcorr2), axis = 1)
+max1 = np.argmax(np.abs(xcorrl), axis = 1)
+print(max1*dt_L + 16.)
+print(max*dt_H + 16.)
+print(f'The difference between the time of arrivals are: {max*dt_L - max1*dt_L}.')
