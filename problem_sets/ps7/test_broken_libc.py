@@ -6,6 +6,7 @@
 
 import numpy as np
 import ctypes
+from ctypes import *
 import numba as nb
 import time
 from matplotlib import pyplot as plt
@@ -14,6 +15,8 @@ mylib=ctypes.cdll.LoadLibrary("libc.dylib")
 rand=mylib.rand
 rand.argtypes=[]
 rand.restype=ctypes.c_int
+
+print(rand())
 
 
 @nb.njit
@@ -44,3 +47,5 @@ for i in range(vv2.shape[0]):
     myline=repr(vv2[i,0])+' '+repr(vv2[i,1])+' '+ repr(vv2[i,2])+'\n'
     f.write(myline)
 f.close()
+
+
