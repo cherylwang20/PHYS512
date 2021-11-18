@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 n=100000
 u=np.random.rand(n)
-v=(np.random.rand(n)*2-1)*0.86
+v=(np.random.rand(n)*2-1)*0.8
 
 r=v/u
 

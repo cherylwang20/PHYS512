@@ -68,4 +68,4 @@ plt.savefig('Reject_Pow.png',dpi = 300, bbox_inches = 'tight')
 plt.show()
 
 eff_pow = len(t_use_p)/len(t_pow)
-print(f'The efficiency of the Lorenztian bounding distribution is: {eff_pow}.')
+print(f'The efficiency of the Power Law bounding distribution is: {eff_pow}.')
