@@ -34,15 +34,19 @@ y=1.5/(1+t**2)*np.random.rand(n)*2
 accept=y<np.exp(-alpha*t)
 t_use=t[accept]
 
+eff_loz = len(t_use)/len(t)
+print(f'The efficiency of the Lorenztian bounding distribution is: {eff_loz}.')
+
 aa,bb=np.histogram(t_use,bins)
+b = 0.5*(bb[1:] + bb[:-1])
 aa = aa/aa.sum()
 exp = myexp/myexp.sum()
-# plt.plot(cents, aa, '*', label = 'Exponential Deviates')
-# plt.plot(cents, exp, 'r', label = 'Predicted')
-# plt.title('Rejection Method via Lorenz')
-# plt.legend()
-# plt.savefig('Reject_Lor.png',dpi = 300, bbox_inches = 'tight')
-# plt.show()
+plt.bar(b, aa, 0.05, label = 'Exponential Deviates')
+plt.plot(b, exp, 'r', label = 'Predicted')
+plt.title('Rejection Method via Lorenz')
+plt.legend()
+plt.savefig('Reject_Lor.png',dpi = 300, bbox_inches = 'tight')
+plt.show()
 
 # rejection method via power laws
 
@@ -56,9 +60,12 @@ print(t_use_p)
 
 aa_pow,bb=np.histogram(t_use_p,bins + 1)
 aa_pow = aa_pow/aa_pow.sum()
-plt.plot(cents , aa_pow, '*', label = 'Exponential Deviates')
+plt.bar(cents , aa_pow, 0.05, label = 'Exponential Deviates')
 plt.plot(cents , exp, 'r', label = 'Predicted')
 plt.title('Rejection Method via Power Law')
 plt.legend()
 plt.savefig('Reject_Pow.png',dpi = 300, bbox_inches = 'tight')
 plt.show()
+
+eff_pow = len(t_use_p)/len(t_pow)
+print(f'The efficiency of the Lorenztian bounding distribution is: {eff_pow}.')
